@@ -10,7 +10,7 @@ class NRPBrowser(object):
     base_url = "https://www.npr.org"
 
     def podcast_categories(self):
-        url = "https://www.npr.org/podcasts/"
+        url = self.base_url + "/podcasts/"
         html = requests.get(url).text
         soup = BeautifulSoup(html, "html.parser")
         cats = soup.find_all("li", {"class": "subtopics__submenu-item"})
@@ -19,7 +19,7 @@ class NRPBrowser(object):
             yield NPRPodcastCategory(url)
 
     def get_featured_podcast_list(self, url="/podcasts/"):
-        url = "https://www.npr.org" + url
+        url = self.base_url + url
         html = requests.get(url).text
         soup = BeautifulSoup(html, "html.parser")
         next_page = soup.find("a", {"class": "more-podcasts"})
@@ -32,7 +32,7 @@ class NRPBrowser(object):
                 yield p
 
     def get_shows(self):
-        url = "https://www.npr.org/programs/"
+        url = self.base_url + "/programs/"
         html = requests.get(url).text
         soup = BeautifulSoup(html, "html.parser")
         sections = soup.find_all("section", {"class": "program-section"})

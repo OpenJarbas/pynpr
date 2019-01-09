@@ -19,6 +19,19 @@ class NPRProgram(object):
             .split("/")
         return name.replace("-", " ").strip()
 
+    @property
+    def show_type(self):
+        if "/podcasts/" in self.url:
+            return "podcast"
+        elif "/programs/" in self.url:
+            return "program"
+        elif "/series/" in self.url:
+            return "series"
+        elif "/sections/" in self.url:
+            return "section"
+        else:
+            return "external"
+
     def parse_page(self):
         html = requests.get(self.url).text
         soup = BeautifulSoup(html, "html.parser")

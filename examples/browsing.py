@@ -8,4 +8,4 @@ for p in NPR.get_featured_podcast_list():
     print(p.name, p.url)
 
 for show in NPR.get_shows():
-    print(show.name, show.url)
+    print(show.name, show.url, show.show_type)
