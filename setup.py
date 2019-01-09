@@ -9,5 +9,6 @@ setup(
     author='jarbasAI',
     author_email='jarbasai@mailfence.com',
     description='unofficial NPR api',
-    install_requires=["requests", "bs4", "feedparser", "algoliasearch"]
+    install_requires=["requests", "bs4", "feedparser", "algoliasearch"],
+    keywords='public, radio, stream, metadata, api, service, npr'
 )
