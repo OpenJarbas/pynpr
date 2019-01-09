@@ -1,6 +1,38 @@
 import requests
 from bs4 import BeautifulSoup
+import feedparser
+import json
 from pynpr.programs import NPRProgram
+
+
+class NPRStream(object):
+    def __init__(self, author="NPR", summary="", title="", streams=None):
+        self.author = author
+        self.summary = summary
+        self.title = title
+        self.streams = streams or []
+        self.rights = 'Copyright 2015-2018 NPR - For Personal Use Only'
+        self.published = ""
+
+    def from_data(self, data):
+        if isinstance(data, str):
+            data = json.loads(data)
+        self.author = data.get("author", self.author)
+        self.summary = data.get("summary", self.summary)
+        self.title = data.get("title", self.title)
+        self.rights = data.get("rights", self.rights)
+        links = data.get("links", [])
+        for l in links:
+            if l["type"] == "audio/mpeg":
+                self.streams.append(l["href"])
+        self.published = data.get("published", self.published)
+        return self
+
+    def as_json(self):
+        return {"author": self.author, "published": self.published,
+                "summary": self.summary, "streams": self.streams,
+                "title": self.title, "rights": self.rights}
+
 
 
 class NPRPodcast(NPRProgram):
@@ -17,6 +49,14 @@ class NPRPodcast(NPRProgram):
         rss_id, name = self.url.replace("https://www.npr.org/podcasts/", "") \
             .split("/")
         return rss_id
+
+    @property
+    def rss_data(self):
+        return feedparser.parse(self.rss_url)
+
+    @property
+    def streams(self):
+        return [NPRStream().from_data(e) for e in self.rss_data.entries]
 
     @property
     def name(self):
@@ -108,4 +148,5 @@ if __name__ == "__main__":
     from pprint import pprint
 
     p = NPRPodcast("https://www.npr.org/podcasts/510289/planet-money")
-    pprint(p.parse_page())
+    for s in p.streams:
+        pprint(s.as_json())
