@@ -70,44 +70,60 @@ class NPRPodcast(NPRProgram):
         html = requests.get(self.url).text
         soup = BeautifulSoup(html, "html.parser")
         main = soup.find("div", {"class": "detail-overview-content col2"})
-        data = {}
+        data = {"url": self.url}
         data["name"] = main.find("h1").text
         text = main.find("p")
         data["summary"] = text.text.replace("More from " + data["name"] + " »",
                                             "")
-        data["url"] = text.find("a")["href"]
+        url = text.find("a")
+        if url:
+            data["url"] = url["href"]
         streams = main.find("ul", {"class": "podcast-tools"}).find_all("li")
         for s in streams:
             stream_name = s.text.strip()
             stream_url = s.find("a")["href"]
             data[stream_name] = stream_url
-        related = soup.find("section",
-                            {"class": "podcast-section related-podcasts"}) \
-            .find("div", {"class": "related-podcasts-inner"}) \
-            .find_all("article")
-        data["related_podcasts"] = {}
-        for r in related:
-            title = r.find("h1", {"class": "podcast-title"}).text
-            url = r.find("a")["href"]
-            data["related_podcasts"][title] = url
 
+        data["related_podcasts"] = {}
+        try:
+            related = soup.find("section",
+                                {"class": "podcast-section related-podcasts"}) \
+                .find("div", {"class": "related-podcasts-inner"}) \
+                .find_all("article")
+
+            for r in related:
+                try:
+                    title = r.find("h1", {"class": "podcast-title"}).text
+                    url = r.find("a")["href"]
+                    data["related_podcasts"][title] = url
+                except:
+                    # just in case
+                    pass
+        except:
+            # some search results fail, TODO find out why
+            pass
         data["recent_episodes"] = []
-        recent = soup.find("section",
-                           {"class": "podcast-section episode-list"}) \
-            .find_all("article")
-        for r in recent:
-            try:
-                date = r.find("span", {"class": "date"}).text.strip()
-                num, title = r.find("h2").text.split(":")
-                teaser = r.find("p", {"class": "teaser"}).text.strip()
-                data["recent_episodes"].append(
-                    {"title": title.strip(),
-                     "date": date,
-                     "episode_number": num.replace("#").strip(),
-                     "teaser": teaser})
-            except:
-                # load more button
-                pass
+
+        try:
+            recent = soup.find("section",
+                               {"class": "podcast-section episode-list"}) \
+                .find_all("article")
+            for r in recent:
+                try:
+                    date = r.find("span", {"class": "date"}).text.strip()
+                    num, title = r.find("h2").text.split(":")
+                    teaser = r.find("p", {"class": "teaser"}).text.strip()
+                    data["recent_episodes"].append(
+                        {"title": title.strip(),
+                         "date": date,
+                         "episode_number": num.replace("#").strip(),
+                         "teaser": teaser})
+                except:
+                    # load more button
+                    pass
+        except:
+            # just in case
+            pass
         return data
 
 

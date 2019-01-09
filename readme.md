@@ -93,3 +93,63 @@ check the [examples](./examples)
     # 'summary': 'Hackers are an expensive headache for companies. But there might '
     #            'be a simple economic fix.',
     # 'title': '#886: The Price of a Hack'} 
+    
+## searching NPR
+
+    from pynpr.search import search_podcasts
+    from pynpr.podcasts import NPRPodcast
+    
+    for result in search_podcasts("science"):
+        print(result)
+        podcast = NPRPodcast(result["url"])
+        
+    # sample output
+    # {'date': 'January 9, 2019',
+    #  'episodes': [{'audio': {'duration': 90,
+    #                          'id': 683412944,
+    #                          'restricted': 'Global'},
+    #                'displayDate': {'dateTime': '2019-01-09T03:00:00-05:00',
+    #                                'longDate': 'January 9, 2019'},
+    #                'hasAudio': True,
+    #                'hasImage': False,
+    #                'id': 683412942,
+    #                'image': {},
+    #                'isExplicit': False,
+    #                'lastModifiedDate': 1546992000,
+    #                'title': 'Stronger Than Silk'},
+    #               {'audio': {'duration': 90,
+    #                          'id': 683191574,
+    #                          'restricted': 'Global'},
+    #                'displayDate': {'dateTime': '2019-01-08T03:00:00-05:00',
+    #                                'longDate': 'January 8, 2019'},
+    #                'hasAudio': True,
+    #                'hasImage': False,
+    #                'id': 683191572,
+    #                'image': {},
+    #                'isExplicit': False,
+    #                'lastModifiedDate': 1546905600,
+    #                'title': 'Robot Overlords'},
+    #               {'audio': {'duration': 90,
+    #                          'id': 682867705,
+    #                          'restricted': 'Global'},
+    #                'displayDate': {'dateTime': '2019-01-07T03:00:00-05:00',
+    #                                'longDate': 'January 7, 2019'},
+    #                'hasAudio': True,
+    #                'hasImage': False,
+    #                'id': 682867703,
+    #                'image': {},
+    #                'isExplicit': False,
+    #                'lastModifiedDate': 1546819200,
+    #                'title': 'Loosened Lips'}],
+    #  'podcast': {'id': 381444663,
+    #              'image': 'https://media-s1.npr.org/images/podcasts/primary/icon_381444663-5a32d6e699f10721710daeccedb4c684e490beb3.jpg',
+    #              'name': 'The Loh Down on Science',
+    #              'owner': 'KPCC',
+    #              'url': 'https://www.scpr.org/programs/loh-down-on-science'},
+    #  'summary': 'Hosted by Sandra Tsing Loh, The Loh Down on Science is a fun way '
+    #             'to get your daily dose of science plus a dash of humor in less '
+    #             'than two minutes.',
+    #  'title': 'The Loh Down on Science',
+    #  'type': 'podcast',
+    #  'url': '/podcasts/381444663/the-loh-down-on-science'}
+    
