@@ -59,11 +59,14 @@ class NPRPodcast(object):
             .find_all("article")
         for r in recent:
             try:
-                date = r.find("span", {"class": "date"}).text
-                title = r.find("h2").text
-                teaser = r.find("p", {"class": "teaser"}).text
-                data["recent_episodes"].append({"title": title, "date": date,
-                                                "teaser": teaser})
+                date = r.find("span", {"class": "date"}).text.strip()
+                num, title = r.find("h2").text.split(":")
+                teaser = r.find("p", {"class": "teaser"}).text.strip()
+                data["recent_episodes"].append(
+                    {"title": title.strip(),
+                     "date": date,
+                     "episode_number": num.replace("#").strip(),
+                     "teaser": teaser})
             except:
                 # load more button
                 pass
@@ -90,6 +93,17 @@ class NPRPodcastCategory(object):
         cat_id, name = self.url.replace("https://www.npr.org/podcasts/", "") \
             .split("/")
         return name.replace("-", " ").strip()
+
+    @property
+    def podcasts(self):
+        html = requests.get(self.url).text
+        soup = BeautifulSoup(html, "html.parser")
+        main = soup.find("section", {"class": "podcast-section"})
+        podcasts = main.find_all("article", {"class": "item"})[1:]
+        for p in podcasts:
+            url = p.find("a")["href"]
+            if url:
+                yield NPRPodcast(url)
 
 
 class NRPBrowser(object):
