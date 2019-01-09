@@ -18,7 +18,7 @@ class NRPBrowser(object):
             url = c.find("a")["href"]
             yield NPRPodcastCategory(url)
 
-    def get_featured_podcast_list(self, url="/podcasts/"):
+    def get_featured_podcasts(self, url="/podcasts/"):
         url = self.base_url + url
         html = requests.get(url).text
         soup = BeautifulSoup(html, "html.parser")
@@ -28,7 +28,7 @@ class NRPBrowser(object):
             url = p.find("a")["href"]
             yield NPRPodcast(url)
         if next_page:
-            for p in self.get_featured_podcast_list(next_page["href"]):
+            for p in self.get_featured_podcasts(next_page["href"]):
                 yield p
 
     def get_shows(self):
